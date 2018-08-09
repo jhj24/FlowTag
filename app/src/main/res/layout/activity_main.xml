@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.jhj.flowtag.MainActivity">
+
+    <Button
+        android:id="@+id/btn_clicked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="clicked"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_single"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="single"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_multi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="multi"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_limit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="limit"
+        android:textAllCaps="false" />
+
+    <com.jhj.flowtaglayout.TagFlowLayout
+        android:id="@+id/tagFlowLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="20dp" />
+
+</LinearLayout>
