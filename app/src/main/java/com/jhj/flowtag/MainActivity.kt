@@ -24,7 +24,8 @@ class MainActivity : AppCompatActivity() {
 
         btn_multi.setOnClickListener {
             layout
-                    .setLayoutRes(list, R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
+                    .setDataList(list)
+                    .setLayoutRes(R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
                         override fun onLayout(view: View, pos: Int) {
                             view.tv_name.text = list[pos]
                         }
@@ -35,11 +36,13 @@ class MainActivity : AppCompatActivity() {
                             toast(list[position])
                         }
                     })
+                    .setSelectedList(1, 2)
         }
 
         btn_single.setOnClickListener {
             layout
-                    .setLayoutRes(list, R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
+                    .setDataList(list)
+                    .setLayoutRes(R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
                         override fun onLayout(view: View, pos: Int) {
                             view.tv_name.text = list[pos]
                         }
@@ -53,12 +56,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         btn_clicked.setOnClickListener {
+            layout
+                    .setDataList(list)
+                    .setLayoutRes(R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
+                        override fun onLayout(view: View, pos: Int) {
+                            view.tv_name.text = list[pos]
+                        }
+                    })
+                    .setMaxSelectCount(0)
+                    .setOnTagClickListener(object : TagFlowLayout.OnTagClickListener {
+                        override fun onTagClick(view: View, position: Int, parent: FlowLayout) {
+                            toast(list[position])
+                        }
+                    })
 
         }
 
         btn_limit.setOnClickListener {
             layout
-                    .setLayoutRes(list, R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
+                    .setDataList(list)
+                    .setLayoutRes(R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
                         override fun onLayout(view: View, pos: Int) {
                             view.tv_name.text = list[pos]
                         }
@@ -66,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                     .setMaxSelectCount(3)
                     .setOnBeyondMaxSelectListener(object : TagFlowLayout.OnBeyondMaxSelectListener {
                         override fun onSelected(position: Int, maxSelected: Int) {
-                            toast("最多选择数为${layout.getMaxSelected()}")
+                            toast("最多选择数为${layout.getMaxSelectedCount()}")
                         }
                     })
                     .setOnTagClickListener(object : TagFlowLayout.OnTagClickListener {

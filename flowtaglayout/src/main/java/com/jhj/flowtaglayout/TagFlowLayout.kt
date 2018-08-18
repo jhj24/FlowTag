@@ -10,18 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import java.util.*
 
-/**
- * Created by zhy on 15/9/10.
- */
 class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
 
-    var adapter: TagAdapter<T>? = null
+    private var adapter: TagAdapter<T>? = null
     private var mSelectedMax = -1//-1为不限制数量
     private val mSelectedView = HashSet<Int>()
     private var mOnSelectListener: OnSelectListener? = null
     private var mOnTagClickListener: OnTagClickListener? = null
     private var mOnBeyondMaxSelectListener: OnBeyondMaxSelectListener? = null
-    private var customListener: OnCustomListener? = null
+    private var mCustomerListener: OnCustomListener? = null
 
     constructor(context: Context) : this(context, null)
 
@@ -31,26 +28,6 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
         val ta = context.obtainStyledAttributes(attrs, R.styleable.TagFlowLayout)
         mSelectedMax = ta.getInt(R.styleable.TagFlowLayout_max_select, -1)
         ta.recycle()
-    }
-
-    val selectedList: Set<Int>
-        get() = HashSet(mSelectedView)
-
-
-
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val cCount = childCount
-        for (i in 0 until cCount) {
-            val tagView = getChildAt(i) as TagView
-            if (tagView.visibility == View.GONE) {
-                continue
-            }
-            if (tagView.tagView.visibility == View.GONE) {
-                tagView.visibility = View.GONE
-            }
-        }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
 
@@ -71,81 +48,36 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
         return this
     }
 
-    fun setLayoutRes(dataList: List<T>, layoutRes: Int): TagFlowLayout<T> {
-        adapter = TagAdapter<T>(dataList)
-        adapter!!.setLayoutRes(layoutRes)
-        adapter!!.setOnDataChangedListener(this)
+    fun setDataList(dataList: List<T>): TagFlowLayout<T> {
+        adapter = TagAdapter(dataList)
+        return this
+    }
+
+    fun setLayoutRes(layoutRes: Int): TagFlowLayout<T> {
+        adapter?.setLayoutRes(layoutRes)
+        adapter?.setOnDataChangedListener(this)
         mSelectedView.clear()
         changeAdapter()
         return this
     }
 
-    fun setLayoutRes(dataList: List<T>, layoutRes: Int, listener: OnCustomListener): TagFlowLayout<T> {
-        this.customListener = listener
-        this.setLayoutRes(dataList, layoutRes)
+    fun setLayoutRes(layoutRes: Int, listener: OnCustomListener): TagFlowLayout<T> {
+        this.mCustomerListener = listener
+        this.setLayoutRes(layoutRes)
         return this
+    }
+
+    fun getSelectedList(): Set<Int> {
+        return HashSet(mSelectedView)
     }
 
     fun setSelectedList(vararg poses: Int): TagFlowLayout<T> {
-        adapter!!.setSelectedList(*poses)
+        adapter?.setSelectedList(*poses)
         return this
     }
 
-    fun getMaxSelected(): Int {
+    fun getMaxSelectedCount(): Int {
         return mSelectedMax
-    }
-
-
-
-    private fun changeAdapter() {
-        removeAllViews()
-        val adapter = this.adapter
-        var tagViewContainer: TagView? = null
-        val preCheckedList = this.adapter!!.preCheckedList
-        for (i in 0 until adapter!!.count) {
-            val tagView = adapter.getView(this)
-            if (customListener != null) {
-                customListener!!.onLayout(tagView, i)
-            }
-            tagViewContainer = TagView(context)
-            tagView.isDuplicateParentStateEnabled = true
-            if (tagView.layoutParams != null) {
-                tagViewContainer.layoutParams = tagView.layoutParams
-
-
-            } else {
-                val lp = ViewGroup.MarginLayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT)
-                lp.setMargins(dip2px(context, 5f),
-                        dip2px(context, 5f),
-                        dip2px(context, 5f),
-                        dip2px(context, 5f))
-                tagViewContainer.layoutParams = lp
-            }
-            val lp = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            tagView.layoutParams = lp
-            tagViewContainer.addView(tagView)
-            addView(tagViewContainer)
-
-            if (preCheckedList.contains(i)) {
-                setChildChecked(i, tagViewContainer)
-            }
-
-            if (this.adapter?.setSelected(i, adapter.getItem(i)) == true) {
-                setChildChecked(i, tagViewContainer)
-            }
-            tagView.isClickable = false
-            val finalTagViewContainer = tagViewContainer
-            val position = i
-            tagViewContainer.setOnClickListener {
-                doSelect(finalTagViewContainer, i)
-                if (mOnTagClickListener != null) {
-                    mOnTagClickListener!!.onTagClick(finalTagViewContainer, i, this@TagFlowLayout)
-                }
-            }
-        }
-        mSelectedView.addAll(preCheckedList)
     }
 
     fun setMaxSelectCount(count: Int): TagFlowLayout<T> {
@@ -157,15 +89,54 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
         return this
     }
 
-    private fun setChildChecked(position: Int, view: TagView) {
-        view.isChecked = true
-        //adapter!!.onSelected(position, view.tagView)
+
+    private fun changeAdapter() {
+        removeAllViews()
+        val adapter = this.adapter
+        var tagViewContainer: TagView
+        adapter?.let {
+            val preCheckedList = it.preCheckedList
+            for (i in 0 until it.count) {
+                val tagView = it.getView(this)
+                if (mCustomerListener != null) {
+                    mCustomerListener?.onLayout(tagView, i)
+                }
+                tagViewContainer = TagView(context)
+                tagView.isDuplicateParentStateEnabled = true
+                if (tagView.layoutParams != null) {
+                    tagViewContainer.layoutParams = tagView.layoutParams
+                } else {
+                    val lp = ViewGroup.MarginLayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT)
+                    lp.setMargins(dip2px(context, 5f),
+                            dip2px(context, 5f),
+                            dip2px(context, 5f),
+                            dip2px(context, 5f))
+                    tagViewContainer.layoutParams = lp
+                }
+                val lp = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                tagView.layoutParams = lp
+                tagViewContainer.addView(tagView)
+                addView(tagViewContainer)
+
+                if (preCheckedList.contains(i)) {
+                    tagViewContainer.isChecked = true
+                }
+                tagView.isClickable = false
+                val finalTagViewContainer = tagViewContainer
+                tagViewContainer.setOnClickListener {
+                    doSelect(finalTagViewContainer, i)
+                    if (mOnTagClickListener != null) {
+                        mOnTagClickListener?.onTagClick(finalTagViewContainer, i, this@TagFlowLayout)
+                    }
+                }
+            }
+            mSelectedView.addAll(preCheckedList)
+        }
+
     }
 
-    private fun setChildUnChecked(position: Int, view: TagView) {
-        view.isChecked = false
-        // adapter!!.unSelected(position, view.tagView)
-    }
 
     private fun doSelect(child: TagView, position: Int) {
         if (!child.isChecked) {
@@ -174,28 +145,41 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
                 val iterator = mSelectedView.iterator()
                 val preIndex = iterator.next()
                 val pre = getChildAt(preIndex) as TagView
-                setChildUnChecked(preIndex, pre)
-                setChildChecked(position, child)
+                pre.isChecked = false
+                child.isChecked = true
 
                 mSelectedView.remove(preIndex)
                 mSelectedView.add(position)
             } else {
                 if (mSelectedMax > 0 && mSelectedView.size >= mSelectedMax) {
                     if (mOnBeyondMaxSelectListener != null) {
-                        mOnBeyondMaxSelectListener!!.onSelected(position, mSelectedMax)
+                        mOnBeyondMaxSelectListener?.onSelected(position, mSelectedMax)
                     }
                     return
                 }
-                setChildChecked(position, child)
+                child.isChecked = true
                 mSelectedView.add(position)
             }
         } else {
-            setChildUnChecked(position, child)
+            child.isChecked = false
             mSelectedView.remove(position)
         }
         if (mOnSelectListener != null) {
-            mOnSelectListener!!.onSelected(HashSet(mSelectedView))
+            mOnSelectListener?.onSelected(HashSet(mSelectedView))
         }
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        for (i in 0 until childCount) {
+            val tagView = getChildAt(i) as TagView
+            if (tagView.visibility == View.GONE) {
+                continue
+            }
+            if (tagView.tagView.visibility == View.GONE) {
+                tagView.visibility = View.GONE
+            }
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
 
@@ -214,22 +198,19 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
         return bundle
     }
 
-    override fun onRestoreInstanceState(state: Parcelable) {
+    override fun onRestoreInstanceState(state: Parcelable?) {
         if (state is Bundle) {
-            val bundle = state
             val mSelectPos = state.getString(KEY_CHOOSE_POS)
             if (!TextUtils.isEmpty(mSelectPos)) {
-                val split = mSelectPos!!.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                for (pos in split) {
-                    val index = Integer.parseInt(pos)
-                    mSelectedView.add(index)
-
-                    val tagView = getChildAt(index) as TagView
-                    if (tagView != null) {
-                        setChildChecked(index, tagView)
+                val split = mSelectPos?.split("\\|".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
+                split?.let {
+                    for (pos in it) {
+                        val index = Integer.parseInt(pos)
+                        mSelectedView.add(index)
+                        val tagView = getChildAt(index) as TagView
+                        tagView.isChecked = true
                     }
                 }
-
             }
             super.onRestoreInstanceState(state.getParcelable(KEY_DEFAULT))
             return
@@ -244,11 +225,9 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
     }
 
     companion object {
-        private val TAG = "TagFlowLayout"
-
-
-        private val KEY_CHOOSE_POS = "key_choose_pos"
-        private val KEY_DEFAULT = "key_default"
+        private const val TAG = "TagFlowLayout"
+        private const val KEY_CHOOSE_POS = "key_choose_pos"
+        private const val KEY_DEFAULT = "key_default"
 
         fun dip2px(context: Context, dpValue: Float): Int {
             val scale = context.resources.displayMetrics.density

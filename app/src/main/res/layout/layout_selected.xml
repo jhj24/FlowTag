@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@drawable/bg_tag_view"
+    android:background="@drawable/bg_tag_view_selected"
     android:text="Helloworld"
     android:textColor="@drawable/text_color">
 

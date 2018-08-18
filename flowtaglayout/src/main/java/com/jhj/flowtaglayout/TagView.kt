@@ -7,7 +7,6 @@ import android.widget.FrameLayout
 
 /**
  * TagView
- * Created by zhy on 15/9/10.
  */
 class TagView(context: Context) : FrameLayout(context), Checkable {
     private var isChecked: Boolean = false
@@ -24,11 +23,7 @@ class TagView(context: Context) : FrameLayout(context), Checkable {
     }
 
 
-    /**
-     * Change the checked state of the view
-     *
-     * @param checked The new checked state
-     */
+    
     override fun setChecked(checked: Boolean) {
         if (this.isChecked != checked) {
             this.isChecked = checked
@@ -36,15 +31,12 @@ class TagView(context: Context) : FrameLayout(context), Checkable {
         }
     }
 
-    /**
-     * @return The current checked state of the view
-     */
     override fun isChecked(): Boolean {
         return isChecked
     }
 
     /**
-     * Change the checked state of the view to the inverse of its current state
+     * 将已检查的视图状态更改为其当前状态的反转
      */
     override fun toggle() {
         setChecked(!isChecked)
