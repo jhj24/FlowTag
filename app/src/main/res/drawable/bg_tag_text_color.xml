@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--选中的颜色-->
+    <item android:color="#ff0000" android:state_checked="true" />
+
+    <!--点击的颜色-->
+    <item android:color="#000000" android:state_pressed="true" />
+
+    <!--默认的颜色-->
+    <item android:color="#f692ff" />
+
+</selector>

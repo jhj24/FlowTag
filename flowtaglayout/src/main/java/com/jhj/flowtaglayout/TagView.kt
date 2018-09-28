@@ -23,7 +23,6 @@ class TagView(context: Context) : FrameLayout(context), Checkable {
     }
 
 
-    
     override fun setChecked(checked: Boolean) {
         if (this.isChecked != checked) {
             this.isChecked = checked

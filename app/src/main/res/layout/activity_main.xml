@@ -42,11 +42,20 @@
         android:text="limit"
         android:textAllCaps="false" />
 
-    <com.jhj.flowtaglayout.TagFlowLayout
-        android:id="@+id/tagFlowLayout"
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:padding="20dp" />
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:foreground="?android:selectableItemBackground">
+
+        <com.jhj.flowtaglayout.TagFlowLayout
+            android:id="@+id/tagFlowLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:padding="20dp" />
+    </LinearLayout>
+
 
 </LinearLayout>

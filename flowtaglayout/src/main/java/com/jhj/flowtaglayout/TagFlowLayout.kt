@@ -92,19 +92,16 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
 
     private fun changeAdapter() {
         removeAllViews()
-        val adapter = this.adapter
-        var tagViewContainer: TagView
         adapter?.let {
-            val preCheckedList = it.preCheckedList
             for (i in 0 until it.count) {
-                val tagView = it.getView(this)
+                val layout = it.getView(this)
                 if (mCustomerListener != null) {
-                    mCustomerListener?.onLayout(tagView, i)
+                    mCustomerListener?.onLayout(layout, i)
                 }
-                tagViewContainer = TagView(context)
-                tagView.isDuplicateParentStateEnabled = true
-                if (tagView.layoutParams != null) {
-                    tagViewContainer.layoutParams = tagView.layoutParams
+                val tagView = TagView(context)
+                layout.isDuplicateParentStateEnabled = true
+                if (layout.layoutParams != null) {
+                    tagView.layoutParams = layout.layoutParams
                 } else {
                     val lp = ViewGroup.MarginLayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -113,26 +110,27 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
                             dip2px(context, 5f),
                             dip2px(context, 5f),
                             dip2px(context, 5f))
-                    tagViewContainer.layoutParams = lp
+                    tagView.layoutParams = lp
                 }
                 val lp = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                tagView.layoutParams = lp
-                tagViewContainer.addView(tagView)
-                addView(tagViewContainer)
+                layout.layoutParams = lp
+                tagView.addView(layout)
+                addView(tagView)
 
-                if (preCheckedList.contains(i)) {
-                    tagViewContainer.isChecked = true
+                if (it.preCheckedList.contains(i)) {
+                    tagView.isChecked = true
                 }
-                tagView.isClickable = false
-                val finalTagViewContainer = tagViewContainer
-                tagViewContainer.setOnClickListener {
-                    doSelect(finalTagViewContainer, i)
+                layout.isClickable = false
+                tagView.setOnClickListener {
+                    if (mSelectedMax != 0) {
+                        doSelect(tagView, i)
+                    }
                     if (mOnTagClickListener != null) {
-                        mOnTagClickListener?.onTagClick(finalTagViewContainer, i, this@TagFlowLayout)
+                        mOnTagClickListener?.onTagClick(tagView, i, this@TagFlowLayout)
                     }
                 }
             }
-            mSelectedView.addAll(preCheckedList)
+            mSelectedView.addAll(it.preCheckedList)
         }
 
     }
