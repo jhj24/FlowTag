@@ -12,6 +12,7 @@ import java.util.*
 
 class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
 
+    private var isClicked = true
     private var adapter: TagAdapter<T>? = null
     private var mSelectedMax = -1//-1为不限制数量
     private val mSelectedView = HashSet<Int>()
@@ -89,6 +90,11 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
         return this
     }
 
+    fun setClicked(isClickable: Boolean): TagFlowLayout<T> {
+        this.isClicked = isClickable
+        return this
+    }
+
 
     private fun changeAdapter() {
         removeAllViews()
@@ -120,7 +126,6 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
                 if (it.preCheckedList.contains(i)) {
                     tagView.isChecked = true
                 }
-                layout.isClickable = false
                 tagView.setOnClickListener {
                     if (mSelectedMax != 0) {
                         doSelect(tagView, i)
@@ -129,6 +134,7 @@ class TagFlowLayout<T> : FlowLayout, TagAdapter.OnDataChangedListener {
                         mOnTagClickListener?.onTagClick(tagView, i, this@TagFlowLayout)
                     }
                 }
+                tagView.isClickable = isClicked
             }
             mSelectedView.addAll(it.preCheckedList)
         }

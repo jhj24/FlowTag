@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         btn_clicked.setOnClickListener {
             layout
+                    .setClicked(true)
                     .setDataList(list)
                     .setLayoutRes(R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
                         override fun onLayout(view: View, pos: Int) {
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         btn_single.setOnClickListener {
             layout
+                    .setClicked(false)
                     .setDataList(list)
                     .setLayoutRes(R.layout.layout_selected, object : TagFlowLayout.OnCustomListener {
                         override fun onLayout(view: View, pos: Int) {
